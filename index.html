@@ -1,1 +1,34 @@
-<!DOCTYPE html><html><head><title>Drink Calculator</title></head><body><h1>Welcome to the Drink Calculator App</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Drink Calculator App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Drink Calculator App</h1>
+    <form id="drink-form">
+      <label for="alcohol">Alcohol (oz):</label>
+      <input type="number" id="alcohol" name="alcohol" required />
+
+      <label for="mixer">Mixer (oz):</label>
+      <input type="number" id="mixer" name="mixer" required />
+
+      <label for="abv">Alcohol % (ABV):</label>
+      <input type="number" id="abv" name="abv" required />
+
+      <button type="submit">Calculate</button>
+    </form>
+
+    <div id="results" class="results hidden">
+      <h2>Results</h2>
+      <p><strong>ABV:</strong> <span id="result-abv"></span>%</p>
+      <p><strong>Calories:</strong> <span id="result-calories"></span> kcal</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
