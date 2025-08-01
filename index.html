@@ -3,32 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Drink Calculator App</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Drink Calculator</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="container">
-    <h1>Drink Calculator App</h1>
-    <form id="drink-form">
-      <label for="alcohol">Alcohol (oz):</label>
-      <input type="number" id="alcohol" name="alcohol" required />
+    <h1>Drink Calculator</h1>
 
-      <label for="mixer">Mixer (oz):</label>
-      <input type="number" id="mixer" name="mixer" required />
+    <section class="section">
+      <h2>Drink Builder</h2>
+
+      <label for="alcohol">Alcohol (oz):</label>
+      <input type="number" id="alcohol" step="0.1" placeholder="e.g., 1.5">
 
       <label for="abv">Alcohol % (ABV):</label>
-      <input type="number" id="abv" name="abv" required />
+      <input type="number" id="abv" step="0.1" placeholder="e.g., 40">
 
-      <button type="submit">Calculate</button>
-    </form>
+      <label for="mixerVolume">Mixer Volume (oz):</label>
+      <input type="number" id="mixerVolume" step="0.1" placeholder="e.g., 4">
 
-    <div id="results" class="results hidden">
+      <label for="mixerType">Mixer Type:</label>
+      <select id="mixerType">
+        <option value="tonic">Tonic</option>
+        <option value="sugarFreeTonic">Sugar-Free Tonic</option>
+        <option value="clubSoda">Club Soda</option>
+        <option value="redBull">Red Bull</option>
+        <option value="sugarFreeRedBull">Sugar-Free Red Bull</option>
+        <option value="orangeJuice">Orange Juice</option>
+        <option value="gingerAle">Ginger Ale</option>
+        <option value="sugarFreeGingerAle">Sugar-Free Ginger Ale</option>
+        <option value="lightLager">Light Lager</option>
+        <option value="lager">Regular Lager</option>
+        <option value="simpleSyrup">Simple Syrup</option>
+      </select>
+
+      <label for="iceType">Ice Type:</label>
+      <select id="iceType">
+        <option value="none">None</option>
+        <option value="topHat">Top Hat</option>
+        <option value="smallCube">Small Cube</option>
+        <option value="largeCube">Large Cube</option>
+        <option value="crushed">Crushed</option>
+      </select>
+
+      <label for="prepMethod">Preparation Method:</label>
+      <select id="prepMethod">
+        <option value="shakenNeat">Shaken, poured neat</option>
+        <option value="shakenOverIce">Shaken, poured over ice</option>
+        <option value="stirredNeat">Stirred, poured neat</option>
+        <option value="stirredOverIce">Stirred, poured over ice</option>
+        <option value="builtOverIce">Built over ice</option>
+        <option value="builtNoIce">Built without ice</option>
+      </select>
+
+      <label for="dilutionTime">Dilution Time:</label>
+      <select id="dilutionTime">
+        <option value="short">1–9 min (shot)</option>
+        <option value="medium">10–20 min (sipped)</option>
+        <option value="long">20+ min (nursed)</option>
+      </select>
+
+      <button id="calculateBtn">Calculate</button>
+    </section>
+
+    <section class="section">
       <h2>Results</h2>
-      <p><strong>ABV:</strong> <span id="result-abv"></span>%</p>
-      <p><strong>Calories:</strong> <span id="result-calories"></span> kcal</p>
-    </div>
+      <div id="results"></div>
+    </section>
   </div>
 
-  <script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
