@@ -55,15 +55,29 @@
         <option value="crushed">Crushed</option>
       </select>
 
-      <label for="prepMethod">Preparation Method:</label>
-      <select id="prepMethod">
-        <option value="shakenNeat">Shaken, poured neat</option>
-        <option value="shakenOverIce">Shaken, poured over ice</option>
-        <option value="stirredNeat">Stirred, poured neat</option>
-        <option value="stirredOverIce">Stirred, poured over ice</option>
-        <option value="builtOverIce">Built over ice</option>
-        <option value="builtNoIce">Built without ice</option>
-      </select>
+<label for="prep-method">Preparation Method:</label>
+<select id="prep-method" name="prep-method" required>
+  <option value="">-- Select a prep method --</option>
+  <option value="shaken_neat">Shaken with ice, served neat</option>
+  <option value="shaken_over">Shaken with ice, served over ice</option>
+  <option value="stirred_neat">Stirred with ice, served neat</option>
+  <option value="stirred_over">Stirred with ice, served over ice</option>
+  <option value="built_neat">Built neat, served over ice</option>
+  <option value="built_over">Built over ice</option>
+  <option value="built_dry_then_iced">Built neat, then large cube added (e.g., Old Fashioned)</option>
+</select>
+
+<br><br>
+
+<label for="ice-type">Ice Type (if served over ice):</label>
+<select id="ice-type" name="ice-type">
+  <option value="">-- Select ice type --</option>
+  <option value="none">None (served neat)</option>
+  <option value="crushed">Crushed</option>
+  <option value="top_hat">Top Hat</option>
+  <option value="small_cube">Small Cube</option>
+  <option value="large_cube">Large Cube (Old Fashioned style)</option>
+</select>
 
       <label for="dilutionTime">Dilution Time:</label>
       <select id="dilutionTime">
