@@ -1,116 +1,116 @@
-// Constants
-const SPIRIT_TEMP = 76; // °F
-const MIXER_TEMP = 40;  // °F
-
-const alcoholData = {
-  vodka: { abv: 40, caloriesPerOz: 64, sugar: 0, carbs: 0, fat: 0, sodium: 0 },
-  gin: { abv: 40, caloriesPerOz: 64, sugar: 0, carbs: 0, fat: 0, sodium: 0 },
-  rum: { abv: 40, caloriesPerOz: 64, sugar: 0, carbs: 0, fat: 0, sodium: 0 },
-  tequila: { abv: 40, caloriesPerOz: 64, sugar: 0, carbs: 0, fat: 0, sodium: 0 },
-  whisky: { abv: 40, caloriesPerOz: 70, sugar: 0, carbs: 0, fat: 0, sodium: 0 },
-  lager: { abv: 5, caloriesPerOz: 13, sugar: 0.1, carbs: 1.1, fat: 0, sodium: 0 },
-  'light lager': { abv: 4.2, caloriesPerOz: 9, sugar: 0.1, carbs: 0.5, fat: 0, sodium: 0 },
-  'orange juice': { abv: 0, caloriesPerOz: 14, sugar: 2.5, carbs: 3.5, fat: 0, sodium: 1 },
-  'club soda': { abv: 0, caloriesPerOz: 0, sugar: 0, carbs: 0, fat: 0, sodium: 0 },
-  'simple syrup': { abv: 0, caloriesPerOz: 50, sugar: 13, carbs: 13, fat: 0, sodium: 0 },
-  'sugar-free tonic': { abv: 0, caloriesPerOz: 0, sugar: 0, carbs: 0, fat: 0, sodium: 5 },
-  'tonic': { abv: 0, caloriesPerOz: 10, sugar: 2.5, carbs: 3, fat: 0, sodium: 5 },
-  'ginger ale': { abv: 0, caloriesPerOz: 12, sugar: 3, carbs: 3.5, fat: 0, sodium: 7 },
-  'sugar-free ginger ale': { abv: 0, caloriesPerOz: 0, sugar: 0, carbs: 0, fat: 0, sodium: 5 },
-  'red bull': { abv: 0, caloriesPerOz: 13, sugar: 3, carbs: 3.5, fat: 0, sodium: 10 },
-  'sugar-free red bull': { abv: 0, caloriesPerOz: 1, sugar: 0, carbs: 0, fat: 0, sodium: 10 }
-};
-
-function calculateDilutionFactor(method, iceType, time) {
-  // Estimate based on method, ice, and time
-  const methodBase = {
-    shaken: 0.15,
-    stirred: 0.12,
-    built: 0.05
-  };
-
-  const iceMultiplier = {
-    'crushed': 1.3,
-    'small cube': 1,
-    'top hat': 0.8,
-    'large cube': 0.6
-  };
-
-  const timeMultiplier = {
-    short: 1,
-    medium: 1.3,
-    long: 1.6
-  };
-
-  let methodKey = method.includes('shaken') ? 'shaken'
-                : method.includes('stirred') ? 'stirred'
-                : 'built';
-
-  let iceKey = Object.keys(iceMultiplier).find(k => iceType.toLowerCase().includes(k)) || 'small cube';
-  let timeKey = time <= 9 ? 'short' : time <= 20 ? 'medium' : 'long';
-
-  return methodBase[methodKey] * iceMultiplier[iceKey] * timeMultiplier[timeKey];
-}
-
-function parseIngredients(inputs) {
-  return inputs.map(input => {
-    const [name, oz] = input.split(':').map(x => x.trim().toLowerCase());
-    const data = alcoholData[name];
-    const amount = parseFloat(oz);
-    return {
-      name,
-      oz: amount,
-      abv: data?.abv || 0,
-      calories: (data?.caloriesPerOz || 0) * amount,
-      sugar: (data?.sugar || 0) * amount,
-      carbs: (data?.carbs || 0) * amount,
-      fat: (data?.fat || 0) * amount,
-      sodium: (data?.sodium || 0) * amount,
-      alcoholOz: (data?.abv || 0) * amount / 100
-    };
-  });
-}
-
-function calculateDrink(inputs, method, iceType, time) {
-  const ingredients = parseIngredients(inputs);
-  const totalVolume = ingredients.reduce((sum, i) => sum + i.oz, 0);
-  const dilution = calculateDilutionFactor(method, iceType, time);
-  const dilutedVolume = totalVolume * (1 + dilution);
-  const totalAlcoholOz = ingredients.reduce((sum, i) => sum + i.alcoholOz, 0);
-  const abv = (totalAlcoholOz / dilutedVolume) * 100;
-
-  const nutrition = ingredients.reduce((acc, i) => {
-    acc.calories += i.calories;
-    acc.sugar += i.sugar;
-    acc.carbs += i.carbs;
-    acc.fat += i.fat;
-    acc.sodium += i.sodium;
-    return acc;
-  }, { calories: 0, sugar: 0, carbs: 0, fat: 0, sodium: 0 });
-
-  return {
-    abv: abv.toFixed(1),
-    volume: dilutedVolume.toFixed(1),
-    ...nutrition
-  };
-}
-
-// Example: hook into a button click
-document.getElementById("calculate-btn").addEventListener("click", () => {
-  const inputs = document.getElementById("ingredients").value.split('\n');
-  const method = document.getElementById("method").value;
-  const iceType = document.getElementById("ice").value;
-  const time = parseInt(document.getElementById("dilutionTime").value, 10);
-
-  const result = calculateDrink(inputs, method, iceType, time);
-
-  document.getElementById("output").innerHTML = `
-    <strong>ABV:</strong> ${result.abv}%<br>
-    <strong>Total Volume:</strong> ${result.volume} oz<br>
-    <strong>Calories:</strong> ${result.calories.toFixed(0)} kcal<br>
-    <strong>Sugar:</strong> ${result.sugar.toFixed(1)} g<br>
-    <strong>Carbs:</strong> ${result.carbs.toFixed(1)} g<br>
-    <strong>Fat:</strong> ${result.fat.toFixed(1)} g<br>
-    <strong>Sodium:</strong> ${result.sodium.toFixed(0)} mg
+function addAlcohol() {
+  const div = document.createElement("div");
+  div.className = "ingredient-row";
+  div.innerHTML = `
+    <input type="text" class="alcohol-name" placeholder="e.g. Rum" required />
+    <input type="number" class="alcohol-abv" placeholder="ABV (%)" min="0" max="100" step="0.1" required />
+    <input type="number" class="alcohol-volume" placeholder="oz" min="0" step="0.1" required />
   `;
+  document.getElementById("alcohol-list").appendChild(div);
+}
+
+function addMixer() {
+  const div = document.createElement("div");
+  div.className = "ingredient-row";
+  div.innerHTML = `
+    <input type="text" class="mixer-name" placeholder="e.g. OJ" required />
+    <input type="number" class="mixer-sugar" placeholder="Sugar (g/oz)" min="0" step="0.1" />
+    <input type="number" class="mixer-volume" placeholder="oz" min="0" step="0.1" required />
+  `;
+  document.getElementById("mixer-list").appendChild(div);
+}
+
+function getDilutionFactor(prepMethod, dilutionTime, iceType) {
+  // Estimated dilution % based on method, time, and ice type
+  const base = {
+    shaken_neat: 0.17,
+    shaken_over_ice: 0.20,
+    stirred_neat: 0.12,
+    stirred_over_ice: 0.15,
+    built_over_ice: 0.10,
+    built_neat: 0.0,
+    built_neat_served_ice: 0.10
+  }[prepMethod] || 0;
+
+  const timeMult = {
+    shot: 0.9,
+    sipped: 1.0,
+    nursed: 1.1
+  }[dilutionTime] || 1;
+
+  const iceMult = {
+    crushed: 1.25,
+    small_cube: 1.0,
+    large_cube: 0.85,
+    top_hat: 0.75,
+    none: 0
+  }[iceType] || 1;
+
+  return base * timeMult * iceMult;
+}
+
+document.getElementById("drink-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  let totalVolume = 0;
+  let totalAlcoholMl = 0;
+  let totalSugarG = 0;
+  let totalFatG = 0;
+  let totalCarbsG = 0;
+  let totalSodiumMg = 0;
+
+  // Alcohols
+  const alcohols = document.querySelectorAll("#alcohol-list .ingredient-row");
+  alcohols.forEach(row => {
+    const abv = parseFloat(row.querySelector(".alcohol-abv").value) / 100;
+    const volOz = parseFloat(row.querySelector(".alcohol-volume").value);
+    const volMl = volOz * 29.5735;
+    const alcMl = volMl * abv;
+
+    totalVolume += volOz;
+    totalAlcoholMl += alcMl;
+
+    // Estimate nutrition (per oz): 64 cal, 0g sugar/fat/carbs/sodium for spirits
+    totalFatG += 0;
+    totalCarbsG += 0;
+    totalSugarG += 0;
+    totalSodiumMg += 0;
+  });
+
+  // Mixers
+  const mixers = document.querySelectorAll("#mixer-list .ingredient-row");
+  mixers.forEach(row => {
+    const volOz = parseFloat(row.querySelector(".mixer-volume").value);
+    const sugarPerOz = parseFloat(row.querySelector(".mixer-sugar").value) || 0;
+    totalVolume += volOz;
+    totalSugarG += sugarPerOz * volOz;
+    totalCarbsG += sugarPerOz * volOz; // Simple assumption: sugar = carbs
+  });
+
+  const prepMethod = document.getElementById("prep-method").value;
+  const dilutionTime = document.getElementById("dilution-time").value;
+  const iceType = document.getElementById("ice-type").value;
+
+  const dilutionFactor = getDilutionFactor(prepMethod, dilutionTime, iceType);
+  const dilutionVolume = totalVolume * dilutionFactor;
+  totalVolume += dilutionVolume;
+
+  const abv = (totalAlcoholMl / (totalVolume * 29.5735)) * 100;
+  const kcalFromAlcohol = totalAlcoholMl * 0.789 * 7 / 1000 * 1000; // kcal from grams alcohol
+  const kcalFromSugar = totalSugarG * 4;
+  const totalKcal = kcalFromAlcohol + kcalFromSugar;
+
+  const results = `
+    <h2>Results</h2>
+    <p><strong>Total Volume:</strong> ${totalVolume.toFixed(2)} oz</p>
+    <p><strong>ABV:</strong> ${abv.toFixed(1)}%</p>
+    <p><strong>Calories:</strong> ${totalKcal.toFixed(0)} kcal</p>
+    <p><strong>Sugar:</strong> ${totalSugarG.toFixed(1)} g</p>
+    <p><strong>Carbs:</strong> ${totalCarbsG.toFixed(1)} g</p>
+    <p><strong>Fat:</strong> ${totalFatG.toFixed(1)} g</p>
+    <p><strong>Sodium:</strong> ${totalSodiumMg.toFixed(0)} mg</p>
+    <p><em>Dilution: +${dilutionVolume.toFixed(2)} oz</em></p>
+  `;
+
+  document.getElementById("results").innerHTML = results;
 });
