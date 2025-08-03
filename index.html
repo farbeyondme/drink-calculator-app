@@ -35,11 +35,13 @@
   <option value="Light Lager"></option>
   <option value="Lager"></option>
   <option value="Stout"></option>
-</datalist>      <div class="section">
+</datalist>
+
+      <div class="section">
         <h3>Alcohol(s)</h3>
         <div id="alcohol-list">
           <div class="ingredient-row">
-            <input type="text" class="alcohol-name" placeholder="e.g. Vodka" required />
+            <input type="text" class="alcohol-name" list="alcohol-options" placeholder="e.g. Vodka" required />
             <input type="number" class="alcohol-abv" placeholder="ABV (%)" min="0" max="100" step="0.1" required />
             <input type="number" class="alcohol-volume" placeholder="oz" min="0" step="0.1" required />
           </div>
