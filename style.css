@@ -1,127 +1,104 @@
-/* Font imports: Deco-style headers + clean body */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Work+Sans:wght@300;400;500&display=swap');
+/* Import elegant deco and modern fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500&display=swap');
+
+:root {
+  --bg-color: #f8f6f3;
+  --accent-color: #bfa46f;
+  --text-color: #222;
+  --border-color: #d4c5ab;
+  --button-bg: #222;
+  --button-text: #f8f6f3;
+  --button-hover: #bfa46f;
+}
 
 body {
-  font-family: 'Work Sans', sans-serif;
-  background-color: #f7f6f2; /* soft cream */
   margin: 0;
   padding: 0;
-  color: #222;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.5;
+  font-size: 16px;
 }
 
-/* Main container */
-.container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 40px;
-  background-color: #fff;
-  border: 1px solid #e4e0d8;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-/* Headings */
 h1, h2, h3 {
   font-family: 'Cinzel', serif;
-  font-weight: 600;
-  color: #111;
+  color: var(--text-color);
   text-align: center;
-  letter-spacing: 1px;
+  margin-top: 1rem;
 }
 
-h1 {
-  font-size: 2.4rem;
-  margin-bottom: 20px;
-  color: #1b1b1b;
-}
-
-h2 {
-  font-size: 1.6rem;
-  margin-top: 40px;
-  border-top: 1px solid #e4e0d8;
-  padding-top: 15px;
-}
-
-/* Form layout */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.section {
-  background-color: #faf9f6;
-  padding: 20px;
-  border: 1px solid #e4e0d8;
-}
-
-label, input, select {
-  font-family: 'Work Sans', sans-serif;
-  font-size: 0.95rem;
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 label {
-  font-weight: 500;
-  margin-bottom: 5px;
   display: block;
+  margin: 1rem 0 0.5rem;
+  font-weight: 500;
 }
 
 input, select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 0; /* square edges */
   width: 100%;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-input:focus, select:focus {
-  border-color: #bfa46f; /* warm gold accent */
-  outline: none;
-}
-
-/* Ingredient rows */
-.ingredient-row {
-  display: grid;
-  grid-template-columns: 1fr 0.8fr 0.8fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-/* Buttons */
-button {
-  background-color: #bfa46f; /* gold accent */
-  color: #fff;
-  border: none;
-  padding: 12px;
-  font-weight: 500;
+  padding: 0.6rem;
   font-size: 1rem;
-  cursor: pointer;
-  text-transform: uppercase;
+  border: 1px solid var(--border-color);
   border-radius: 0;
+  background-color: #fff;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-color);
+}
+
+button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  font-family: 'Cinzel', serif;
   letter-spacing: 0.5px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background-color 0.3s ease;
+  border-radius: 0;
+  width: 100%;
 }
 
 button:hover {
-  background-color: #a38958;
+  background-color: var(--button-hover);
+  color: #fff;
 }
 
-/* Results section */
 .results {
-  margin-top: 30px;
-  background-color: #fffdf9;
-  padding: 20px;
-  border: 1px solid #e4e0d8;
-  font-size: 1rem;
-  line-height: 1.6;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  background-color: #fff;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Responsive */
+.results h3 {
+  margin-top: 0;
+  font-family: 'Cinzel', serif;
+  color: var(--accent-color);
+}
+
 @media (max-width: 600px) {
   .container {
-    padding: 20px;
+    padding: 1rem;
   }
-  .ingredient-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+
+  button {
+    font-size: 0.95rem;
+  }
+
+  input, select {
+    font-size: 0.95rem;
   }
 }
