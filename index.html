@@ -4,95 +4,72 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Drink Calculator</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>Drink Calculator</h1>
 
-    <section class="section">
-      <h2>Drink Builder</h2>
+    <form id="drink-form">
+      <div class="section">
+        <h3>Alcohol(s)</h3>
+        <div id="alcohol-list">
+          <div class="ingredient-row">
+            <input type="text" class="alcohol-name" placeholder="e.g. Vodka" required />
+            <input type="number" class="alcohol-abv" placeholder="ABV (%)" min="0" max="100" step="0.1" required />
+            <input type="number" class="alcohol-volume" placeholder="oz" min="0" step="0.1" required />
+          </div>
+        </div>
+        <button type="button" onclick="addAlcohol()">+ Add Alcohol</button>
+      </div>
 
-   <label for="alcoholType">Alcohol Type:</label>
-<select id="alcoholType">
-  <option value="">Select alcohol...</option>
-  <option value="vodka">Vodka</option>
-  <option value="gin">Gin</option>
-  <option value="rum">Rum</option>
-  <option value="tequila">Tequila</option>
-  <option value="whisky">Whisky</option>
-  <option value="lager">Lager</option>
-  <option value="light lager">Light Lager</option>
-</select>
+      <div class="section">
+        <h3>Mixer(s)</h3>
+        <div id="mixer-list">
+          <div class="ingredient-row">
+            <input type="text" class="mixer-name" placeholder="e.g. Club Soda" required />
+            <input type="number" class="mixer-sugar" placeholder="Sugar (g/oz)" min="0" step="0.1" />
+            <input type="number" class="mixer-volume" placeholder="oz" min="0" step="0.1" required />
+          </div>
+        </div>
+        <button type="button" onclick="addMixer()">+ Add Mixer</button>
+      </div>
 
-<label for="alcoholVolume">Alcohol Volume (oz):</label>
-<input type="number" id="alcoholVolume" placeholder="e.g., 1.5">
+      <div class="section">
+        <h3>Preparation</h3>
+        <label>Prep Method:
+          <select id="prep-method" required>
+            <option value="shaken_neat">Shaken w/ Ice, Served Neat</option>
+            <option value="shaken_over_ice">Shaken w/ Ice, Served Over Ice</option>
+            <option value="stirred_neat">Stirred w/ Ice, Served Neat</option>
+            <option value="stirred_over_ice">Stirred w/ Ice, Served Over Ice</option>
+            <option value="built_over_ice">Built Over Ice</option>
+            <option value="built_neat">Built Without Ice</option>
+            <option value="built_neat_served_ice">Built Neat, Served Over Ice</option>
+          </select>
+        </label>
+        <label>Ice Type:
+          <select id="ice-type">
+            <option value="none">None</option>
+            <option value="crushed">Crushed Ice</option>
+            <option value="small_cube">Small Cube</option>
+            <option value="large_cube">Large Cube</option>
+            <option value="top_hat">Top Hat</option>
+          </select>
+        </label>
+        <label>Dilution Time:
+          <select id="dilution-time">
+            <option value="shot">1–9 min (Shot)</option>
+            <option value="sipped">10–20 min (Sipped)</option>
+            <option value="nursed">20+ min (Nursed)</option>
+          </select>
+        </label>
+      </div>
 
-      <label for="mixerVolume">Mixer Volume (oz):</label>
-      <input type="number" id="mixerVolume" step="0.1" placeholder="e.g., 4">
+      <button type="submit">Calculate</button>
+    </form>
 
-      <label for="mixerType">Mixer Type:</label>
-      <select id="mixerType">
-        <option value="tonic">Tonic</option>
-        <option value="sugarFreeTonic">Sugar-Free Tonic</option>
-        <option value="clubSoda">Club Soda</option>
-        <option value="redBull">Red Bull</option>
-        <option value="sugarFreeRedBull">Sugar-Free Red Bull</option>
-        <option value="orangeJuice">Orange Juice</option>
-        <option value="gingerAle">Ginger Ale</option>
-        <option value="sugarFreeGingerAle">Sugar-Free Ginger Ale</option>
-        <option value="lightLager">Light Lager</option>
-        <option value="lager">Regular Lager</option>
-        <option value="simpleSyrup">Simple Syrup</option>
-      </select>
-
-      <label for="iceType">Ice Type:</label>
-      <select id="iceType">
-        <option value="none">None</option>
-        <option value="topHat">Top Hat</option>
-        <option value="smallCube">Small Cube</option>
-        <option value="largeCube">Large Cube</option>
-        <option value="crushed">Crushed</option>
-      </select>
-
-<label for="prep-method">Preparation Method:</label>
-<select id="prep-method" name="prep-method" required>
-  <option value="">-- Select a prep method --</option>
-  <option value="shaken_neat">Shaken with ice, served neat</option>
-  <option value="shaken_over">Shaken with ice, served over ice</option>
-  <option value="stirred_neat">Stirred with ice, served neat</option>
-  <option value="stirred_over">Stirred with ice, served over ice</option>
-  <option value="built_neat">Built neat, served over ice</option>
-  <option value="built_over">Built over ice</option>
-  <option value="built_dry_then_iced">Built neat, then large cube added (e.g., Old Fashioned)</option>
-</select>
-
-<br><br>
-
-<label for="ice-type">Ice Type (if served over ice):</label>
-<select id="ice-type" name="ice-type">
-  <option value="">-- Select ice type --</option>
-  <option value="none">None (served neat)</option>
-  <option value="crushed">Crushed</option>
-  <option value="top_hat">Top Hat</option>
-  <option value="small_cube">Small Cube</option>
-  <option value="large_cube">Large Cube (Old Fashioned style)</option>
-</select>
-
-      <label for="dilutionTime">Dilution Time:</label>
-      <select id="dilutionTime">
-        <option value="short">1–9 min (shot)</option>
-        <option value="medium">10–20 min (sipped)</option>
-        <option value="long">20+ min (nursed)</option>
-      </select>
-
-      <button id="calculateBtn">Calculate</button>
-    </section>
-
-    <section class="section">
-      <h2>Results</h2>
-      <div id="results"></div>
-    </section>
+    <div id="results" class="results"></div>
   </div>
 
   <script src="app.js"></script>
