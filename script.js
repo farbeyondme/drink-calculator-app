@@ -1,3 +1,37 @@
+// ---- Auto-fill ABV for known alcohols ----
+const ALCOHOL_DEFAULTS = {
+  "vodka": 40, "gin": 40, "rum": 40, "tequila": 40, "whisky": 40, "whiskey": 40,
+  "bourbon": 45, "rye": 45, "scotch": 40, "mezcal": 42, "cognac": 40, "brandy": 40,
+  "aperol": 11, "campari": 24, "triple sec": 30, "amaretto": 28, "coffee liqueur": 20,
+  "irish cream": 17, "sweet vermouth": 16, "dry vermouth": 18,
+  "light lager": 4.2, "lager": 5, "stout": 6
+};
+
+function norm(s){ return (s||"").toString().trim().toLowerCase(); }
+
+function wireAlcoholAutoABV(container = document) {
+  container.querySelectorAll(".alcohol-name").forEach(input => {
+    if (input._hasABVHandler) return; // avoid double-binding
+    input._hasABVHandler = true;
+
+    input.addEventListener("change", () => {
+      const name = norm(input.value);
+      const row = input.closest(".ingredient-row");
+      if (!row) return;
+      const abvField = row.querySelector(".alcohol-abv");
+      const guess = ALCOHOL_DEFAULTS[name];
+      if (guess && (!abvField.value || Number(abvField.value) === 0)) {
+        abvField.value = guess; // auto-fill ABV if empty
+      }
+    });
+  });
+}
+
+// Wire existing row(s) on load
+document.addEventListener("DOMContentLoaded", () => {
+  wireAlcoholAutoABV(document);
+});
+
 function addAlcohol() {
   const div = document.createElement("div");
   div.className = "ingredient-row";
