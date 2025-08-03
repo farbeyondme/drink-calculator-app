@@ -36,12 +36,14 @@ function addAlcohol() {
   const div = document.createElement("div");
   div.className = "ingredient-row";
   div.innerHTML = `
-    <input type="text" class="alcohol-name" placeholder="e.g. Rum" required />
+    <input type="text" class="alcohol-name" list="alcohol-options" placeholder="e.g. Rum" required />
     <input type="number" class="alcohol-abv" placeholder="ABV (%)" min="0" max="100" step="0.1" required />
     <input type="number" class="alcohol-volume" placeholder="oz" min="0" step="0.1" required />
   `;
   document.getElementById("alcohol-list").appendChild(div);
+  wireAlcoholAutoABV(div); // enable auto-fill on this new row
 }
+
 
 function addMixer() {
   const div = document.createElement("div");
