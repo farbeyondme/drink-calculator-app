@@ -10,7 +10,17 @@ const ALCOHOL_DEFAULTS = {
   "irish cream": 17, "sweet vermouth": 16, "dry vermouth": 18,
   "light lager": 4.2, "lager": 5, "stout": 6
 };
-
+// Nutrition defaults for liqueurs (per oz). Approximations; refine later as needed.
+const LIQUEUR_DEFAULTS = {
+  "aperol":         { kcal: 35, sugar: 4.5, carbs: 4.5 },  // ~11% abv
+  "campari":        { kcal: 70, sugar: 5.0, carbs: 5.0 },  // ~24% abv
+  "triple sec":     { kcal: 86, sugar: 7.2, carbs: 7.2 },  // ~30% abv (Cointreau-ish)
+  "amaretto":       { kcal: 94, sugar: 9.0, carbs: 9.0 },  // ~28% abv
+  "coffee liqueur": { kcal: 80, sugar: 8.0, carbs: 8.0 },  // Kahlua-ish
+  "irish cream":    { kcal: 100, sugar: 7.0, carbs: 7.0 }, // Baileys-ish (fat not included yet)
+  "sweet vermouth": { kcal: 45, sugar: 4.0, carbs: 4.0 },  // ~16% abv
+  "dry vermouth":   { kcal: 35, sugar: 0.4, carbs: 0.4 }   // ~18% abv
+};
 // Mixer per-oz nutrition (approx): kcal, sugar g, carbs g, fat g, sodium mg
 const MIXER_DEFAULTS = {
   "club soda":             { kcal: 0,  sugar: 0,   carbs: 0,   fat: 0, sodium: 0 },
