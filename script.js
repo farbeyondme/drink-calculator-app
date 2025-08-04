@@ -28,9 +28,10 @@ const LIQUEUR_DEFAULTS = {
 
 const WINE_BEER_DEFAULTS = {
   // Sparkling wine
-  "prosecco":       { kcal: 20.0, sugar: 0.6, carbs: 0.8 },
+  "prosecco": { kcal: 21, sugar: 1.1, carbs: 1.2 },
+  "champagne":      { kcal: 21, sugar: 1.1, carbs: 1.2 },
   "sparkling wine": { kcal: 20.0, sugar: 0.6, carbs: 0.8 },
-  "champagne":      { kcal: 21.0, sugar: 0.6, carbs: 0.8 },
+  
   // Beer (per oz)
   "light lager":    { kcal: 10.6, sugar: 0.1, carbs: 0.6 },   // ~100 / 12 oz
   "lager":          { kcal: 14.6, sugar: 0.2, carbs: 1.1 },   // ~175 / 12 oz
