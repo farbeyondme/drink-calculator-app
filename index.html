@@ -5,139 +5,222 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Drink Calculator</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Minimal tab styles (works with your existing theme) */
+    .tabs { display:flex; gap:8px; margin:10px 0 20px; justify-content:center; }
+    .tab-btn { background:#eae6dc; border:1px solid #d5cbb8; padding:10px 14px; cursor:pointer; }
+    .tab-btn[aria-selected="true"] { background:#bfa46f; color:#fff; border-color:#bfa46f; }
+    .tab-panel[hidden] { display:none; }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Drink Calculator</h1>
 
-    <form id="drink-form">
-      <!-- Alcohol typeahead options -->
-      <datalist id="alcohol-options">
-        <option value="Vodka"></option>
-        <option value="Gin"></option>
-        <option value="Rum"></option>
-        <option value="Tequila"></option>
-        <option value="Whisky"></option>
-        <option value="Whiskey"></option>
-        <option value="Bourbon"></option>
-        <option value="Rye"></option>
-        <option value="Scotch"></option>
-        <option value="Mezcal"></option>
-        <option value="Cognac"></option>
-        <option value="Brandy"></option>
-        <option value="Aperol"></option>
-        <option value="Campari"></option>
-        <option value="Triple Sec"></option>
-        <option value="Amaretto"></option>
-        <option value="Coffee Liqueur"></option>
-        <option value="Irish Cream"></option>
-        <option value="Sweet Vermouth"></option>
-        <option value="Dry Vermouth"></option>
-        <option value="Light Lager"></option>
-        <option value="Lager"></option>
-        <option value="Stout"></option>
-<option value="Prosecco"></option>
-<option value="Champagne"></option>
-<option value="Sparkling Wine"></option>
-      </datalist>
+    <!-- Tabs header -->
+    <div class="tabs">
+      <button class="tab-btn" data-tab="calc" aria-selected="true">Calculator</button>
+      <button class="tab-btn" data-tab="suggest">Suggester</button>
+      <button class="tab-btn" data-tab="mine">My Drinks</button>
+    </div>
 
-      <!-- Mixer typeahead options -->
-      <datalist id="mixer-options">
-        <option value="Club Soda"></option>
-        <option value="Tonic"></option>
-        <option value="Sugar-Free Tonic"></option>
-        <option value="Ginger Ale"></option>
-        <option value="Sugar-Free Ginger Ale"></option>
-        <option value="Orange Juice"></option>
-        <option value="Red Bull"></option>
-        <option value="Sugar-Free Red Bull"></option>
-        <option value="Simple Syrup"></option>
-<option value="Soda Water"></option>
-<option value="Sparkling Water"></option>
-      </datalist>
+    <!-- ===================== -->
+    <!-- Calculator tab panel -->
+    <!-- ===================== -->
+    <div class="tab-panel" data-panel="calc">
+      <form id="drink-form">
+        <!-- Alcohol typeahead options -->
+        <datalist id="alcohol-options">
+          <option value="Vodka"></option>
+          <option value="Gin"></option>
+          <option value="Rum"></option>
+          <option value="Tequila"></option>
+          <option value="Whisky"></option>
+          <option value="Whiskey"></option>
+          <option value="Bourbon"></option>
+          <option value="Rye"></option>
+          <option value="Scotch"></option>
+          <option value="Mezcal"></option>
+          <option value="Cognac"></option>
+          <option value="Brandy"></option>
+          <option value="Aperol"></option>
+          <option value="Campari"></option>
+          <option value="Triple Sec"></option>
+          <option value="Amaretto"></option>
+          <option value="Coffee Liqueur"></option>
+          <option value="Irish Cream"></option>
+          <option value="Sweet Vermouth"></option>
+          <option value="Dry Vermouth"></option>
+          <option value="Light Lager"></option>
+          <option value="Lager"></option>
+          <option value="Stout"></option>
+          <option value="Prosecco"></option>
+          <option value="Champagne"></option>
+          <option value="Sparkling Wine"></option>
+        </datalist>
 
-      <div class="section">
-        <h3>Alcohol(s)</h3>
-        <div id="alcohol-list">
-          <!-- First row: keep required so at least one alcohol is entered -->
-          <div class="ingredient-row">
-            <input type="text" class="alcohol-name" list="alcohol-options" placeholder="e.g. Vodka" required />
-            <input type="number" class="alcohol-abv" placeholder="ABV (%)" min="0" max="100" step="0.1" required />
-            <input type="number" class="alcohol-volume" placeholder="oz" min="0" step="0.1" required />
+        <!-- Mixer typeahead options -->
+        <datalist id="mixer-options">
+          <option value="Club Soda"></option>
+          <option value="Tonic"></option>
+          <option value="Sugar-Free Tonic"></option>
+          <option value="Ginger Ale"></option>
+          <option value="Sugar-Free Ginger Ale"></option>
+          <option value="Orange Juice"></option>
+          <option value="Red Bull"></option>
+          <option value="Sugar-Free Red Bull"></option>
+          <option value="Simple Syrup"></option>
+          <option value="Soda Water"></option>
+          <option value="Sparkling Water"></option>
+        </datalist>
+
+        <div class="section">
+          <h3>Alcohol(s)</h3>
+          <div id="alcohol-list">
+            <!-- First row: keep required so at least one alcohol is entered -->
+            <div class="ingredient-row">
+              <input type="text" class="alcohol-name" list="alcohol-options" placeholder="e.g. Vodka" required />
+              <input type="number" class="alcohol-abv" placeholder="ABV (%)" min="0" max="100" step="0.1" required />
+              <input type="number" class="alcohol-volume" placeholder="oz" min="0" step="0.1" required />
+            </div>
           </div>
+          <button type="button" onclick="addAlcohol()">+ Add Alcohol</button>
         </div>
-        <button type="button" onclick="addAlcohol()">+ Add Alcohol</button>
+
+        <div class="section">
+          <h3>Mixer(s)</h3>
+          <div id="mixer-list">
+            <div class="ingredient-row mixer-row">
+              <input type="text" class="mixer-name" list="mixer-options" placeholder="e.g. Club Soda" />
+              <input type="number" class="mixer-volume" placeholder="oz" min="0" step="0.1" />
+            </div>
+          </div>
+          <button type="button" onclick="addMixer()">+ Add Mixer</button>
+        </div>
+
+        <div class="section">
+          <h3>Preparation</h3>
+          <label>Prep Method:
+            <select id="prep-method" required>
+              <option value="shaken_with_ice">Shaken with Ice</option>
+              <option value="stirred_with_ice">Stirred with Ice</option>
+              <option value="built_over_ice">Built Over Ice</option>
+              <option value="built_neat">Built Without Ice</option>
+            </select>
+          </label>
+
+          <label>Ice Type:
+            <select id="ice-type">
+              <option value="none">None (Neat)</option>
+              <option value="crushed">Crushed Ice</option>
+              <option value="small_cube">Small Cube</option>
+              <option value="large_cube">Large Cube</option>
+              <option value="top_hat">Top Hat</option>
+            </select>
+          </label>
+
+          <label>Dilution Time:
+            <select id="dilution-time">
+              <option value="shot">1–9 min (Shot)</option>
+              <option value="sipped">10–20 min (Sipped)</option>
+              <option value="nursed">20+ min (Nursed)</option>
+            </select>
+          </label>
+
+          <label>Glass Type:
+            <select id="glass-type">
+              <option value="rocks">Rocks (8–10 oz)</option>
+              <option value="coupe">Coupe (6 oz)</option>
+              <option value="martini">Martini (6–8 oz)</option>
+              <option value="wine">Wine (12–14 oz)</option>
+              <option value="pint">Pint (16 oz)</option>
+              <option value="collins">Collins/Highball (12 oz)</option>
+            </select>
+          </label>
+
+          <label>Rim:
+            <select id="rim-option">
+              <option value="none">None</option>
+              <option value="sugar_half">Sugar (Half Rim)</option>
+              <option value="sugar_full">Sugar (Full Rim)</option>
+              <option value="salt_half">Salt (Half Rim)</option>
+              <option value="salt_full">Salt (Full Rim)</option>
+              <option value="tajin_half">Tajín (Half Rim)</option>
+              <option value="tajin_full">Tajín (Full Rim)</option>
+            </select>
+          </label>
+        </div>
+
+        <button type="submit">Calculate</button>
+      </form>
+
+      <div id="results" class="results"></div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- Suggester tab panel  -->
+    <!-- ===================== -->
+    <div class="tab-panel" data-panel="suggest" hidden>
+      <h2>Suggester (Classic Drinks)</h2>
+      <div class="section" id="suggester">
+        <div class="ingredient-row">
+          <input id="suggest-q" type="text" placeholder="Search name (e.g., 'old fashioned')" />
+          <input id="suggest-min-abv" type="number" step="0.1" placeholder="Min ABV %" />
+          <input id="suggest-max-abv" type="number" step="0.1" placeholder="Max ABV %" />
+        </div>
+        <div class="ingredient-row">
+          <input id="suggest-min-kcal" type="number" step="1" placeholder="Min kcal" />
+          <input id="suggest-max-kcal" type="number" step="1" placeholder="Max kcal" />
+          <input id="suggest-max-sugar" type="number" step="0.1" placeholder="Max sugar (g)" />
+        </div>
+        <button type="button" id="suggest-run">Find Classics</button>
+        <div id="suggest-results" class="results"></div>
       </div>
+    </div>
 
-      <div class="section">
-        <h3>Mixer(s)</h3>
-   <div id="mixer-list">
-  <div class="ingredient-row mixer-row">
-    <input type="text" class="mixer-name" list="mixer-options" placeholder="e.g. Club Soda" />
-    <input type="number" class="mixer-volume" placeholder="oz" min="0" step="0.1" />
-  </div>
-</div>
-        <button type="button" onclick="addMixer()">+ Add Mixer</button>
+    <!-- ===================== -->
+    <!-- My Drinks tab panel  -->
+    <!-- ===================== -->
+    <div class="tab-panel" data-panel="mine" hidden>
+      <h2>My Drinks</h2>
+      <div class="section" id="my-drinks">
+        <div class="ingredient-row">
+          <input id="my-q" type="text" placeholder="Search name" />
+          <input id="my-min-abv" type="number" step="0.1" placeholder="Min ABV %" />
+          <input id="my-max-abv" type="number" step="0.1" placeholder="Max ABV %" />
+        </div>
+        <div class="ingredient-row">
+          <input id="my-min-kcal" type="number" step="1" placeholder="Min kcal" />
+          <input id="my-max-kcal" type="number" step="1" placeholder="Max kcal" />
+          <input id="my-max-sugar" type="number" step="0.1" placeholder="Max sugar (g)" />
+        </div>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+          <input id="save-name" type="text" placeholder="Name this drink (e.g., 'My Lighter OF')" style="flex:1;" />
+          <button type="button" id="save-current">Save Current Drink</button>
+        </div>
+        <div id="my-results" class="results"></div>
       </div>
+    </div>
 
-      <div class="section">
-        <h3>Preparation</h3>
-        <label>Prep Method:
-        <select id="prep-method" required>
-<option value="shaken_with_ice">Shaken with Ice</option>
-<option value="stirred_with_ice">Stirred with Ice</option>
-<option value="built_over_ice">Built Over Ice</option>
-<option value="built_neat">Built Without Ice</option>
-</select>
-        </label>
-
-        <label>Ice Type:
-          <select id="ice-type">
-            <option value="none">None (Neat)</option>
-            <option value="crushed">Crushed Ice</option>
-            <option value="small_cube">Small Cube</option>
-            <option value="large_cube">Large Cube</option>
-            <option value="top_hat">Top Hat</option>
-          </select>
-        </label>
-
-        <label>Dilution Time:
-          <select id="dilution-time">
-            <option value="shot">1–9 min (Shot)</option>
-            <option value="sipped">10–20 min (Sipped)</option>
-            <option value="nursed">20+ min (Nursed)</option>
-          </select>
-        </label>
-
-     <label>Glass Type:
-  <select id="glass-type">
-    <option value="rocks">Rocks (8–10 oz)</option>
-    <option value="coupe">Coupe (6 oz)</option>
-    <option value="martini">Martini (6–8 oz)</option>
-    <option value="wine">Wine (12–14 oz)</option>
-    <option value="pint">Pint (16 oz)</option>
-    <option value="collins">Collins/Highball (12 oz)</option>
-  </select>
-</label>
-<label>Rim:
-  <select id="rim-option">
-    <option value="none">None</option>
-    <option value="sugar_half">Sugar (Half Rim)</option>
-    <option value="sugar_full">Sugar (Full Rim)</option>
-    <option value="salt_half">Salt (Half Rim)</option>
-    <option value="salt_full">Salt (Full Rim)</option>
-    <option value="tajin_half">Tajín (Half Rim)</option>
-    <option value="tajin_full">Tajín (Full Rim)</option>
-  </select>
-</label>
-      </div>
-
-      <button type="submit">Calculate</button>
-    </form>
-
-    <div id="results" class="results"></div>
-  </div>
+  </div> <!-- /.container -->
 
   <script src="script.js"></script>
+
+  <!-- Tiny tab-toggle script -->
+  <script>
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      const tab = btn.getAttribute('data-tab');
+      // set button state
+      document.querySelectorAll('.tab-btn').forEach(b =>
+        b.setAttribute('aria-selected', b === btn ? 'true' : 'false')
+      );
+      // show matching panel
+      document.querySelectorAll('.tab-panel').forEach(p => {
+        p.hidden = p.getAttribute('data-panel') !== tab;
+      });
+    });
+  </script>
 </body>
 </html>
