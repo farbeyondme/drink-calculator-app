@@ -11,31 +11,45 @@
     <h1>Drink Calculator</h1>
 
     <form id="drink-form">
-<!-- Alcohol typeahead options (used by all alcohol rows) -->
-<datalist id="alcohol-options">
-  <option value="Vodka"></option>
-  <option value="Gin"></option>
-  <option value="Rum"></option>
-  <option value="Tequila"></option>
-  <option value="Whisky"></option>
-  <option value="Bourbon"></option>
-  <option value="Rye"></option>
-  <option value="Scotch"></option>
-  <option value="Mezcal"></option>
-  <option value="Cognac"></option>
-  <option value="Brandy"></option>
-  <option value="Aperol"></option>
-  <option value="Campari"></option>
-  <option value="Triple Sec"></option>
-  <option value="Amaretto"></option>
-  <option value="Coffee Liqueur"></option>
-  <option value="Irish Cream"></option>
-  <option value="Sweet Vermouth"></option>
-  <option value="Dry Vermouth"></option>
-  <option value="Light Lager"></option>
-  <option value="Lager"></option>
-  <option value="Stout"></option>
-</datalist>
+      <!-- Alcohol typeahead options (used by all alcohol rows) -->
+      <datalist id="alcohol-options">
+        <option value="Vodka"></option>
+        <option value="Gin"></option>
+        <option value="Rum"></option>
+        <option value="Tequila"></option>
+        <option value="Whisky"></option>
+        <option value="Whiskey"></option>
+        <option value="Bourbon"></option>
+        <option value="Rye"></option>
+        <option value="Scotch"></option>
+        <option value="Mezcal"></option>
+        <option value="Cognac"></option>
+        <option value="Brandy"></option>
+        <option value="Aperol"></option>
+        <option value="Campari"></option>
+        <option value="Triple Sec"></option>
+        <option value="Amaretto"></option>
+        <option value="Coffee Liqueur"></option>
+        <option value="Irish Cream"></option>
+        <option value="Sweet Vermouth"></option>
+        <option value="Dry Vermouth"></option>
+        <option value="Light Lager"></option>
+        <option value="Lager"></option>
+        <option value="Stout"></option>
+      </datalist>
+
+      <!-- Mixer typeahead options -->
+      <datalist id="mixer-options">
+        <option value="Club Soda"></option>
+        <option value="Tonic"></option>
+        <option value="Sugar-Free Tonic"></option>
+        <option value="Ginger Ale"></option>
+        <option value="Sugar-Free Ginger Ale"></option>
+        <option value="Orange Juice"></option>
+        <option value="Red Bull"></option>
+        <option value="Sugar-Free Red Bull"></option>
+        <option value="Simple Syrup"></option>
+      </datalist>
 
       <div class="section">
         <h3>Alcohol(s)</h3>
@@ -53,7 +67,7 @@
         <h3>Mixer(s)</h3>
         <div id="mixer-list">
           <div class="ingredient-row">
-            <input type="text" class="mixer-name" placeholder="e.g. Club Soda" required />
+            <input type="text" class="mixer-name" list="mixer-options" placeholder="e.g. Club Soda" required />
             <input type="number" class="mixer-sugar" placeholder="Sugar (g/oz)" min="0" step="0.1" />
             <input type="number" class="mixer-volume" placeholder="oz" min="0" step="0.1" required />
           </div>
@@ -71,9 +85,9 @@
             <option value="stirred_over_ice">Stirred w/ Ice, Served Over Ice</option>
             <option value="built_over_ice">Built Over Ice</option>
             <option value="built_neat">Built Without Ice</option>
-            <option value="built_neat_served_ice">Built Neat, Served Over Ice</option>
           </select>
         </label>
+
         <label>Ice Type:
           <select id="ice-type">
             <option value="none">None</option>
@@ -83,11 +97,23 @@
             <option value="top_hat">Top Hat</option>
           </select>
         </label>
+
         <label>Dilution Time:
           <select id="dilution-time">
             <option value="shot">1–9 min (Shot)</option>
             <option value="sipped">10–20 min (Sipped)</option>
             <option value="nursed">20+ min (Nursed)</option>
+          </select>
+        </label>
+
+        <label>Glass Type:
+          <select id="glass-type">
+            <option value="rocks">Rocks (8 oz)</option>
+            <option value="coupe">Coupe (6 oz)</option>
+            <option value="wine">Wine (12 oz)</option>
+            <option value="pint">Pint (16 oz)</option>
+            <option value="collins">Collins/Highball (12 oz)</option>
+            <option value="nick_nora">Nick & Nora (5 oz)</option>
           </select>
         </label>
       </div>
@@ -98,6 +124,6 @@
     <div id="results" class="results"></div>
   </div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
