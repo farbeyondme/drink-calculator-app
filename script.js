@@ -113,23 +113,50 @@ const PREP_DILUTION = {
   built_neat:       0.00
 };
 
-// Service melt (happens in the glass over time; depends on serving ice)
+// Service melt (happens in the glass over time; 15–20 min baseline fractions)
 const SERVICE_MELT = {
   crushed:    0.060,
-  small_cube: 0.035,
-  large_cube: 0.025,
-  top_hat:    0.018,
+  small_cube: 0.035, // ~1–1.25" cubes, ~4 pieces in rocks baseline
+  top_hat:    0.032, // Hoshizaki AM top-hat (~6 pieces in rocks baseline)
+  large_cube: 0.025, // single 2" clear cube
   none:       0.000
 };
 
 // Time multipliers (presets)
 const TIME_MULT = { shot: 0.9, sipped: 1.0, nursed: 1.1 };
 
-function getFractions(prepMethod, dilutionTime, iceType) {
-  const prepFrac    = PREP_DILUTION[prepMethod] ?? 0;
-  const serviceBase = SERVICE_MELT[iceType] ?? 0;
-  const t           = TIME_MULT[dilutionTime] ?? 1.0;
-  return { prepFrac: prepFrac * t, serviceFrac: serviceBase * t };
+// Default piece counts by GLASS × ICE (typical packed service)
+const GLASS_ICE_PIECES = {
+  rocks:   { crushed: 1, small_cube: 4,  top_hat: 6,  large_cube: 1, none: 0 },
+  coupe:   { crushed: 0, small_cube: 0,  top_hat: 0,  large_cube: 0, none: 0 }, // usually no ice
+  martini: { crushed: 0, small_cube: 0,  top_hat: 0,  large_cube: 0, none: 0 }, // no ice
+  wine:    { crushed: 1, small_cube: 8,  top_hat: 10, large_cube: 0, none: 0 }, // spritz/full ice wine glass
+  pint:    { crushed: 1, small_cube: 12, top_hat: 14, large_cube: 2, none: 0 }, // tall & packed
+  collins: { crushed: 1, small_cube: 8,  top_hat: 10, large_cube: 0, none: 0 }  // highball/collins
+};
+
+// Sub-linear scaling so more pieces => more melt, with diminishing returns
+function pieceMultiplier(pieces, baselinePieces) {
+  const base = baselinePieces || 1;
+  if (!base || !pieces) return 1;
+  return Math.sqrt(pieces / base);
+}
+
+function getFractions(prepMethod, dilutionTime, iceType, glassType) {
+  const prepBase  = PREP_DILUTION[prepMethod] ?? 0;
+  const t         = TIME_MULT[dilutionTime] ?? 1.0;
+
+  // Prep dilution (independent of serving ice)
+  const prepFrac  = prepBase * t;
+
+  // Service melt (depends on glass & ice)
+  const baseSvc   = SERVICE_MELT[iceType] ?? 0;
+  const glassMap  = GLASS_ICE_PIECES[glassType] || GLASS_ICE_PIECES.rocks;
+  const pieces    = (glassMap && iceType in glassMap) ? glassMap[iceType] : 0;
+  const svcMult   = pieceMultiplier(pieces, pieces); // table value is baseline → multiplier = 1
+  const serviceFrac = baseSvc * t * svcMult;
+
+  return { prepFrac, serviceFrac };
 }
 
 // ===============================
@@ -200,10 +227,10 @@ document.getElementById("drink-form").addEventListener("submit", function (e) {
   const prepMethod   = document.getElementById("prep-method").value;
   const dilutionTime = document.getElementById("dilution-time").value;
   const iceType      = document.getElementById("ice-type").value;
-  const glassType    = document.getElementById("glass-type")?.value || null;
+  const glassType    = document.getElementById("glass-type")?.value || "rocks";
   const rimOption    = document.getElementById("rim-option")?.value || "none";
 
-  const { prepFrac, serviceFrac } = getFractions(prepMethod, dilutionTime, iceType);
+  const { prepFrac, serviceFrac } = getFractions(prepMethod, dilutionTime, iceType, glassType);
 
   // ---- Add rim contributions (doesn't change volume)
   const rim = RIM_DEFAULTS[rimOption] || RIM_DEFAULTS.none;
@@ -212,7 +239,7 @@ document.getElementById("drink-form").addEventListener("submit", function (e) {
   totalSodiumMg += rim.sodiumMg;
   const rimKcal  = rim.kcal;
 
-  // ---- Volumes: start (after prep only) and end (after prep + service)
+  // ---- Volumes: start (after prep) and end (after prep + service)
   const startVolOz = preVolumeOz * (1 + prepFrac);
   const endVolOz   = preVolumeOz * (1 + prepFrac + serviceFrac);
 
