@@ -77,11 +77,9 @@ function addAlcohol() {
 
 function addMixer() {
   const div = document.createElement("div");
-  div.className = "ingredient-row";
-  // No sugar input — we’ll use MIXER_DEFAULTS behind the scenes
+  div.className = "ingredient-row mixer-row";
   div.innerHTML = `
     <input type="text" class="mixer-name" list="mixer-options" placeholder="e.g. Club Soda" />
-    <div></div>
     <input type="number" class="mixer-volume" placeholder="oz" min="0" step="0.1" />
   `;
   document.getElementById("mixer-list").appendChild(div);
