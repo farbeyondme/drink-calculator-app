@@ -11,7 +11,7 @@
     <h1>Drink Calculator</h1>
 
     <form id="drink-form">
-      <!-- Alcohol typeahead options (used by all alcohol rows) -->
+      <!-- Alcohol typeahead options -->
       <datalist id="alcohol-options">
         <option value="Vodka"></option>
         <option value="Gin"></option>
@@ -54,6 +54,7 @@
       <div class="section">
         <h3>Alcohol(s)</h3>
         <div id="alcohol-list">
+          <!-- First row: keep required so at least one alcohol is entered -->
           <div class="ingredient-row">
             <input type="text" class="alcohol-name" list="alcohol-options" placeholder="e.g. Vodka" required />
             <input type="number" class="alcohol-abv" placeholder="ABV (%)" min="0" max="100" step="0.1" required />
@@ -67,9 +68,9 @@
         <h3>Mixer(s)</h3>
         <div id="mixer-list">
           <div class="ingredient-row">
-            <input type="text" class="mixer-name" list="mixer-options" placeholder="e.g. Club Soda" required />
-            <input type="number" class="mixer-sugar" placeholder="Sugar (g/oz)" min="0" step="0.1" />
-            <input type="number" class="mixer-volume" placeholder="oz" min="0" step="0.1" required />
+            <input type="text" class="mixer-name" list="mixer-options" placeholder="e.g. Club Soda" />
+            <!-- sugar input removed; handled automatically -->
+            <input type="number" class="mixer-volume" placeholder="oz" min="0" step="0.1" />
           </div>
         </div>
         <button type="button" onclick="addMixer()">+ Add Mixer</button>
@@ -79,10 +80,8 @@
         <h3>Preparation</h3>
         <label>Prep Method:
           <select id="prep-method" required>
-            <option value="shaken_neat">Shaken w/ Ice, Served Neat</option>
-            <option value="shaken_over_ice">Shaken w/ Ice, Served Over Ice</option>
-            <option value="stirred_neat">Stirred w/ Ice, Served Neat</option>
-            <option value="stirred_over_ice">Stirred w/ Ice, Served Over Ice</option>
+            <option value="shaken">Shaken</option>
+            <option value="stirred">Stirred</option>
             <option value="built_over_ice">Built Over Ice</option>
             <option value="built_neat">Built Without Ice</option>
           </select>
@@ -90,7 +89,7 @@
 
         <label>Ice Type:
           <select id="ice-type">
-            <option value="none">None</option>
+            <option value="none">None (Neat)</option>
             <option value="crushed">Crushed Ice</option>
             <option value="small_cube">Small Cube</option>
             <option value="large_cube">Large Cube</option>
