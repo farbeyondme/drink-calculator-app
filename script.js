@@ -8,7 +8,8 @@ const ALCOHOL_DEFAULTS = {
   "bourbon": 45, "rye": 45, "scotch": 40, "mezcal": 42, "cognac": 40, "brandy": 40,
   "aperol": 11, "campari": 24, "triple sec": 30, "amaretto": 28, "coffee liqueur": 20,
   "irish cream": 17, "sweet vermouth": 16, "dry vermouth": 18,
-  "light lager": 4.2, "lager": 5, "stout": 6
+  "light lager": 4.2, "lager": 5, "stout": 6, "prosecco": 11.5,
+"champagne": 12, "sparkling wine": 11.5
 };
 
 // Nutrition defaults for liqueurs (per oz). Approximations; refine later as needed.
