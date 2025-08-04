@@ -24,6 +24,19 @@ const LIQUEUR_DEFAULTS = {
   "dry vermouth":   { kcal: 35, sugar: 0.4, carbs: 0.4 }
 };
 
+// Per-oz nutrition for wines & beers (non-ethanol calories)
+
+const WINE_BEER_DEFAULTS = {
+  // Sparkling wine
+  "prosecco":       { kcal: 20.0, sugar: 0.6, carbs: 0.8 },
+  "sparkling wine": { kcal: 20.0, sugar: 0.6, carbs: 0.8 },
+  "champagne":      { kcal: 21.0, sugar: 0.6, carbs: 0.8 },
+  // Beer (per oz)
+  "light lager":    { kcal: 10.6, sugar: 0.1, carbs: 0.6 },   // ~100 / 12 oz
+  "lager":          { kcal: 14.6, sugar: 0.2, carbs: 1.1 },   // ~175 / 12 oz
+  "stout":          { kcal: 20.8, sugar: 0.3, carbs: 1.7 }    // ~250 / 12 oz
+};
+
 // Mixer per-oz nutrition (approx): kcal, sugar g, carbs g, fat g, sodium mg
 const MIXER_DEFAULTS = {
   "club soda":             { kcal: 0,  sugar: 0,   carbs: 0,   fat: 0, sodium: 0 },
@@ -187,26 +200,35 @@ document.getElementById("drink-form").addEventListener("submit", function (e) {
   let totalSodiumMg = 0;
   let mixerKcal = 0;       // mixer + liqueur kcal
 
-  // ---- Alcohols ----
-  document.querySelectorAll("#alcohol-list .ingredient-row").forEach(row => {
-    const name  = norm(row.querySelector(".alcohol-name")?.value);
-    const abvVal = parseFloat(row.querySelector(".alcohol-abv")?.value);
-    const volOz  = parseFloat(row.querySelector(".alcohol-volume")?.value);
-    if (isNaN(abvVal) || isNaN(volOz) || volOz <= 0) return;
+// ---- Alcohols (with liqueur + wine/beer nutrition) ----
+document.querySelectorAll("#alcohol-list .ingredient-row").forEach(row => {
+  const name  = norm(row.querySelector(".alcohol-name")?.value);
+  const abvVal = parseFloat(row.querySelector(".alcohol-abv")?.value);
+  const volOz  = parseFloat(row.querySelector(".alcohol-volume")?.value);
+  if (isNaN(abvVal) || isNaN(volOz) || volOz <= 0) return;
 
-    const abv = abvVal / 100;
-    const volMl = volOz * OZ_TO_ML;
+  const abv = abvVal / 100;
+  const volMl = volOz * OZ_TO_ML;
 
-    preVolumeOz    += volOz;
-    totalAlcoholMl += volMl * abv;
+  preVolumeOz    += volOz;
+  totalAlcoholMl += volMl * abv;
 
-    const liq = LIQUEUR_DEFAULTS[name];
-    if (liq) {
-      totalSugarG += (liq.sugar || 0) * volOz;
-      totalCarbsG += (liq.carbs || liq.sugar || 0) * volOz;
-      mixerKcal   += (liq.kcal  || 0) * volOz;
-    }
-  });
+  // Liqueurs: add sugar/carbs/kcal per oz (beyond ethanol)
+  const liq = LIQUEUR_DEFAULTS[name];
+  if (liq) {
+    totalSugarG += (liq.sugar || 0) * volOz;
+    totalCarbsG += (liq.carbs || liq.sugar || 0) * volOz;
+    mixerKcal   += (liq.kcal  || 0) * volOz;
+  }
+
+  // Wine/beer: add residual sugar/carbs/kcal per oz (beyond ethanol)
+  const wb = WINE_BEER_DEFAULTS[name];
+  if (wb) {
+    totalSugarG += (wb.sugar || 0) * volOz;
+    totalCarbsG += (wb.carbs || 0) * volOz;
+    mixerKcal   += (wb.kcal  || 0) * volOz; // non-ethanol calories
+  }
+});
 
   // ---- Mixers ----
   document.querySelectorAll("#mixer-list .ingredient-row").forEach(row => {
