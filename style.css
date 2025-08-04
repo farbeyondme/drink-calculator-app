@@ -86,7 +86,18 @@ input:focus, select:focus {
   gap: 10px;
   margin-bottom: 10px;
 }
+/* Mixer rows are two columns: name | oz  */
+.mixer-row {
+  grid-template-columns: 1fr 0.8fr;
+}
 
+/* Keep mixer rows tidy on small screens (match your mobile rules) */
+@media (max-width: 600px) {
+  .mixer-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}
 /* Buttons */
 button {
   background-color: #bfa46f; /* gold accent */
