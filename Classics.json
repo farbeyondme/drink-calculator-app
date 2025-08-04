@@ -1,0 +1,60 @@
+[
+  {
+    "name": "Old Fashioned",
+    "glass": "rocks",
+    "prepMethod": "built_neat",
+    "iceType": "large_cube",
+    "dilutionTime": "sipped",
+    "alcohols": [
+      {"name":"whisky", "abv":40, "oz":2.0}
+    ],
+    "mixers": [
+      {"name":"simple syrup", "oz":0.5}
+    ],
+    "rim": "none"
+  },
+  {
+    "name": "Negroni",
+    "glass": "rocks",
+    "prepMethod": "stirred_with_ice",
+    "iceType": "large_cube",
+    "dilutionTime": "sipped",
+    "alcohols": [
+      {"name":"gin", "abv":40, "oz":1.0},
+      {"name":"campari", "abv":24, "oz":1.0},
+      {"name":"sweet vermouth", "abv":16, "oz":1.0}
+    ],
+    "mixers": [],
+    "rim": "none"
+  },
+  {
+    "name": "Aperol Spritz",
+    "glass": "wine",
+    "prepMethod": "built_over_ice",
+    "iceType": "top_hat",
+    "dilutionTime": "sipped",
+    "alcohols": [
+      {"name":"aperol", "abv":11, "oz":2.0},
+      {"name":"prosecco", "abv":11.5, "oz":2.0}
+    ],
+    "mixers": [
+      {"name":"soda water", "oz":3.0}
+    ],
+    "rim": "none"
+  },
+  {
+    "name": "Margarita",
+    "glass": "coupe",
+    "prepMethod": "shaken_with_ice",
+    "iceType": "none",
+    "dilutionTime": "sipped",
+    "alcohols": [
+      {"name":"tequila", "abv":40, "oz":2.0},
+      {"name":"triple sec", "abv":30, "oz":1.0}
+    ],
+    "mixers": [
+      {"name":"lime juice", "oz":1.0}
+    ],
+    "rim": "salt_half"
+  }
+]
