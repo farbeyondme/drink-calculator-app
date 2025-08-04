@@ -105,35 +105,33 @@ function addMixer() {
 // Dilution model (4 methods total)
 // ===============================
 function getDilutionFactor(prepMethod, dilutionTime, iceType) {
-  // Base dilution from how it’s made (prep stage, independent of serving ice)
-  const baseByMethod = {
-    shaken_with_ice:   0.18, // shake with ice, then strain (neat or over ice later)
-    stirred_with_ice:  0.12, // stir with ice, then strain
-    built_over_ice:    0.10, // assembled over ice (prep already has ice)
-    built_neat:        0.00  // assembled without ice
+  // ---- Prep dilution (happens while making the drink; independent of serving ice)
+  const PREP_DILUTION = {
+    shaken_with_ice:  0.40, // realistic mid value (not the 0.55–0.60 lab figure)
+    stirred_with_ice: 0.28, // realistic mid value (not the 0.41–0.49 lab figure)
+    built_over_ice:   0.12, // modest melt for built
+    built_neat:       0.00
   };
 
-  const drinkTimeMult = { shot: 0.9, sipped: 1.0, nursed: 1.1 };
-
-  // Extra melt from being served over ice (service stage), applies even if built_neat
-  const serviceMeltByIce = {
-    crushed:    0.06,
-    small_cube: 0.03,
-    large_cube: 0.02,
-    top_hat:    0.015,
-    none:       0.00
+  // ---- Service melt (happens in the glass over time; depends on serving ice)
+  // tuned for a ~10–20 min sip; scaled by time below
+  const SERVICE_MELT = {
+    crushed:    0.060,
+    small_cube: 0.035,
+    large_cube: 0.025,
+    top_hat:    0.018,
+    none:       0.000
   };
 
-  const base = baseByMethod[prepMethod] ?? 0;
-  const timeMult = drinkTimeMult[dilutionTime] ?? 1.0;
+  // ---- Time multiplier (quick shot vs long nurse)
+  const TIME = { shot: 0.9, sipped: 1.0, nursed: 1.1 };
 
-  const basePortion = base * timeMult; // prep-stage melt (always applies for shaken/stirred/built_over_ice)
+  const prep = PREP_DILUTION[prepMethod] ?? 0;
+  const service = SERVICE_MELT[iceType] ?? 0;
+  const t = TIME[dilutionTime] ?? 1.0;
 
-  const servicePortion = (iceType !== 'none')
-    ? (serviceMeltByIce[iceType] ?? 0) * timeMult
-    : 0;
-
-  return basePortion + servicePortion; // fraction of pre-dilution volume
+  // total dilution is fraction of pre-dilution volume
+  return (prep * t) + (service * t);
 }
 
 // ===============================
