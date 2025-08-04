@@ -89,34 +89,47 @@ function addMixer() {
 // Dilution model (4 methods total)
 // ===============================
 function getDilutionFactor(prepMethod, dilutionTime, iceType) {
-  // Base served dilution from making the drink
-  const base = {
+  // Base dilution from how it’s made (shaken/stirred/built over ice)
+  const baseByMethod = {
     shaken:         0.18,
     stirred:        0.12,
     built_over_ice: 0.10,
     built_neat:     0.00
-  }[prepMethod] ?? 0;
+  };
 
-  // Drinking-time multiplier
-  const timeMult = {
-    shot:   0.9,
-    sipped: 1.0,
-    nursed: 1.1
-  }[dilutionTime] ?? 1.0;
+  const drinkTimeMult = { shot: 0.9, sipped: 1.0, nursed: 1.1 };
 
-  // Additional melt from being served over ice.
-  // If served neat (iceType === 'none'), multiplier = 1.0 (don’t erase base).
-  const iceMult = {
+  // Extra melt from being served over ice (applies even if built_neat)
+  // These are modest additions for the service period.
+  const serviceMeltByIce = {
+    crushed:    0.06,
+    small_cube: 0.03,
+    large_cube: 0.02,
+    top_hat:    0.015,
+    none:       0.00
+  };
+
+  const iceEfficiencyMult = { // affects base dilution when ice is used during making
     crushed:    1.25,
     small_cube: 1.00,
     large_cube: 0.85,
     top_hat:    0.75,
     none:       1.00
-  }[iceType] ?? 1.0;
+  };
 
-  return base * timeMult * iceMult;
+  const base = (baseByMethod[prepMethod] ?? 0);
+  const timeMult = (drinkTimeMult[dilutionTime] ?? 1.0);
+
+  // If iceType !== 'none', it can boost base melt (for shaken/stirred/built_over_ice)
+  const basePortion = base * timeMult * (iceType !== 'none' ? (iceEfficiencyMult[iceType] ?? 1.0) : 1.0);
+
+  // Service melt always applies when served over ice, even if base was 0
+  const servicePortion = (iceType !== 'none')
+    ? (serviceMeltByIce[iceType] ?? 0) * timeMult
+    : 0;
+
+  return basePortion + servicePortion; // total dilution fraction of pre-dilution volume
 }
-
 // ===============================
 // Submit handler
 // ===============================
