@@ -398,9 +398,11 @@ let CLASSICS = [];
 
 async function loadClassics() {
   try {
-    const res = await fetch('classics.json'); // served from /public
+    const res = await fetch('./classics.json?ver=2', { cache: 'no-store' });
+    if (!res.ok) throw new Error(`Fetch classics.json failed: ${res.status}`);
     CLASSICS = await res.json();
-  } catch(e) {
+  } catch (e) {
+    console.warn('classics.json missing/unavailable', e);
     CLASSICS = [];
   }
 }
