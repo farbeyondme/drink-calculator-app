@@ -13,14 +13,14 @@ const ALCOHOL_DEFAULTS = {
 
 // Nutrition defaults for liqueurs (per oz). Approximations; refine later as needed.
 const LIQUEUR_DEFAULTS = {
-  "aperol":         { kcal: 35, sugar: 4.5, carbs: 4.5 },  // ~11% abv
-  "campari":        { kcal: 70, sugar: 5.0, carbs: 5.0 },  // ~24% abv
-  "triple sec":     { kcal: 86, sugar: 7.2, carbs: 7.2 },  // ~30% abv
-  "amaretto":       { kcal: 94, sugar: 9.0, carbs: 9.0 },  // ~28% abv
-  "coffee liqueur": { kcal: 80, sugar: 8.0, carbs: 8.0 },  // Kahlua-ish
-  "irish cream":    { kcal: 100, sugar: 7.0, carbs: 7.0 }, // Baileys-ish
-  "sweet vermouth": { kcal: 45, sugar: 4.0, carbs: 4.0 },  // ~16% abv
-  "dry vermouth":   { kcal: 35, sugar: 0.4, carbs: 0.4 }   // ~18% abv
+  "aperol":         { kcal: 35, sugar: 4.5, carbs: 4.5 },
+  "campari":        { kcal: 70, sugar: 5.0, carbs: 5.0 },
+  "triple sec":     { kcal: 86, sugar: 7.2, carbs: 7.2 },
+  "amaretto":       { kcal: 94, sugar: 9.0, carbs: 9.0 },
+  "coffee liqueur": { kcal: 80, sugar: 8.0, carbs: 8.0 },
+  "irish cream":    { kcal: 100, sugar: 7.0, carbs: 7.0 },
+  "sweet vermouth": { kcal: 45, sugar: 4.0, carbs: 4.0 },
+  "dry vermouth":   { kcal: 35, sugar: 0.4, carbs: 0.4 }
 };
 
 // Mixer per-oz nutrition (approx): kcal, sugar g, carbs g, fat g, sodium mg
@@ -68,7 +68,7 @@ function wireAlcoholAutoABV(container = document) {
     };
 
     input.addEventListener("change", handler);
-    input.addEventListener("input", handler); // ensure it fills while typing
+    input.addEventListener("input", handler);
   });
 }
 
@@ -102,53 +102,64 @@ function addMixer() {
 }
 
 // ===============================
-// Dilution model (4 methods total)
+// Dilution model (realistic; two-stage)
 // ===============================
-function getDilutionFactor(prepMethod, dilutionTime, iceType) {
-  // ---- Prep dilution (happens while making the drink; independent of serving ice)
-  const PREP_DILUTION = {
-    shaken_with_ice:  0.40, // realistic mid value (not the 0.55–0.60 lab figure)
-    stirred_with_ice: 0.28, // realistic mid value (not the 0.41–0.49 lab figure)
-    built_over_ice:   0.12, // modest melt for built
-    built_neat:       0.00
-  };
 
-  // ---- Service melt (happens in the glass over time; depends on serving ice)
-  // tuned for a ~10–20 min sip; scaled by time below
-  const SERVICE_MELT = {
-    crushed:    0.060,
-    small_cube: 0.035,
-    large_cube: 0.025,
-    top_hat:    0.018,
-    none:       0.000
-  };
+// Prep dilution (happens while making the drink; independent of serving ice)
+const PREP_DILUTION = {
+  shaken_with_ice:  0.40,
+  stirred_with_ice: 0.28,
+  built_over_ice:   0.12,
+  built_neat:       0.00
+};
 
-  // ---- Time multiplier (quick shot vs long nurse)
-  const TIME = { shot: 0.9, sipped: 1.0, nursed: 1.1 };
+// Service melt (happens in the glass over time; depends on serving ice)
+const SERVICE_MELT = {
+  crushed:    0.060,
+  small_cube: 0.035,
+  large_cube: 0.025,
+  top_hat:    0.018,
+  none:       0.000
+};
 
-  const prep = PREP_DILUTION[prepMethod] ?? 0;
-  const service = SERVICE_MELT[iceType] ?? 0;
-  const t = TIME[dilutionTime] ?? 1.0;
+// Time multipliers (presets)
+const TIME_MULT = { shot: 0.9, sipped: 1.0, nursed: 1.1 };
 
-  // total dilution is fraction of pre-dilution volume
-  return (prep * t) + (service * t);
+function getFractions(prepMethod, dilutionTime, iceType) {
+  const prepFrac    = PREP_DILUTION[prepMethod] ?? 0;
+  const serviceBase = SERVICE_MELT[iceType] ?? 0;
+  const t           = TIME_MULT[dilutionTime] ?? 1.0;
+  return { prepFrac: prepFrac * t, serviceFrac: serviceBase * t };
 }
 
 // ===============================
-// Submit handler
+// Rims (optional)
+// ===============================
+const RIM_DEFAULTS = {
+  sugar_full: { sugarG: 6.0,  carbsG: 6.0,  kcal: 24, sodiumMg: 0   },
+  sugar_half: { sugarG: 3.0,  carbsG: 3.0,  kcal: 12, sodiumMg: 0   },
+  salt_full:  { sugarG: 0.0,  carbsG: 0.0,  kcal: 0,  sodiumMg: 500 },
+  salt_half:  { sugarG: 0.0,  carbsG: 0.0,  kcal: 0,  sodiumMg: 250 },
+  tajin_full: { sugarG: 0.5,  carbsG: 0.5,  kcal: 2,  sodiumMg: 300 },
+  tajin_half: { sugarG: 0.25, carbsG: 0.25, kcal: 1,  sodiumMg: 150 },
+  none:       { sugarG: 0.0,  carbsG: 0.0,  kcal: 0,  sodiumMg: 0   }
+};
+
+// ===============================
+// Submit handler (shows Start & End)
 // ===============================
 document.getElementById("drink-form").addEventListener("submit", function (e) {
   e.preventDefault();
 
-  let totalVolumeOz = 0;
-  let totalAlcoholMl = 0;
+  let preVolumeOz = 0;     // volume before any dilution
+  let totalAlcoholMl = 0;  // pure ethanol ml
   let totalSugarG = 0;
   let totalFatG = 0;
   let totalCarbsG = 0;
   let totalSodiumMg = 0;
-  let mixerKcal = 0; // includes mixer kcal and liqueur kcal
+  let mixerKcal = 0;       // mixer + liqueur kcal
 
-  // ---- Alcohols (skip empty rows); add liqueur sugar/kcal if applicable ----
+  // ---- Alcohols ----
   document.querySelectorAll("#alcohol-list .ingredient-row").forEach(row => {
     const name  = norm(row.querySelector(".alcohol-name")?.value);
     const abvVal = parseFloat(row.querySelector(".alcohol-abv")?.value);
@@ -158,10 +169,9 @@ document.getElementById("drink-form").addEventListener("submit", function (e) {
     const abv = abvVal / 100;
     const volMl = volOz * OZ_TO_ML;
 
-    totalVolumeOz  += volOz;
+    preVolumeOz    += volOz;
     totalAlcoholMl += volMl * abv;
 
-    // If this alcohol is a liqueur, include its sugar/kcal per oz
     const liq = LIQUEUR_DEFAULTS[name];
     if (liq) {
       totalSugarG += (liq.sugar || 0) * volOz;
@@ -170,7 +180,7 @@ document.getElementById("drink-form").addEventListener("submit", function (e) {
     }
   });
 
-  // ---- Mixers (use defaults; no user sugar entry required) ----
+  // ---- Mixers ----
   document.querySelectorAll("#mixer-list .ingredient-row").forEach(row => {
     const name  = norm(row.querySelector(".mixer-name")?.value);
     const volOz = parseFloat(row.querySelector(".mixer-volume")?.value);
@@ -178,45 +188,60 @@ document.getElementById("drink-form").addEventListener("submit", function (e) {
 
     const def = MIXER_DEFAULTS[name] || { kcal: 0, sugar: 0, carbs: 0, fat: 0, sodium: 0 };
 
-    totalVolumeOz += volOz;
-    totalSugarG   += def.sugar  * volOz;
-    totalCarbsG   += def.carbs  * volOz;
-    totalFatG     += def.fat    * volOz;
-    totalSodiumMg += def.sodium * volOz;
-    mixerKcal     += def.kcal   * volOz;
+    preVolumeOz  += volOz;
+    totalSugarG  += def.sugar  * volOz;
+    totalCarbsG  += def.carbs  * volOz;
+    totalFatG    += def.fat    * volOz;
+    totalSodiumMg+= def.sodium * volOz;
+    mixerKcal    += def.kcal   * volOz;
   });
 
-  // ---- Dilution ----
-  const prepMethod   = document.getElementById("prep-method").value;   // 'shaken' | 'stirred' | 'built_over_ice' | 'built_neat'
-  const dilutionTime = document.getElementById("dilution-time").value; // 'shot' | 'sipped' | 'nursed'
-  const iceType      = document.getElementById("ice-type").value;      // 'none' | cube types
+  // ---- Dilution fractions ----
+  const prepMethod   = document.getElementById("prep-method").value;
+  const dilutionTime = document.getElementById("dilution-time").value;
+  const iceType      = document.getElementById("ice-type").value;
   const glassType    = document.getElementById("glass-type")?.value || null;
+  const rimOption    = document.getElementById("rim-option")?.value || "none";
 
-  const dilutionFactor = getDilutionFactor(prepMethod, dilutionTime, iceType);
-  const dilutionOz = totalVolumeOz * dilutionFactor;
-  const finalVolOz = totalVolumeOz + dilutionOz;
+  const { prepFrac, serviceFrac } = getFractions(prepMethod, dilutionTime, iceType);
 
-  // ---- ABV & Calories ----
-  const abvPct = finalVolOz > 0 ? (totalAlcoholMl / (finalVolOz * OZ_TO_ML)) * 100 : 0;
+  // ---- Add rim contributions (doesn't change volume)
+  const rim = RIM_DEFAULTS[rimOption] || RIM_DEFAULTS.none;
+  totalSugarG   += rim.sugarG;
+  totalCarbsG   += rim.carbsG;
+  totalSodiumMg += rim.sodiumMg;
+  const rimKcal  = rim.kcal;
 
-  // kcal from alcohol: ml -> grams (0.789 g/ml) * 7 kcal/g
+  // ---- Volumes: start (after prep only) and end (after prep + service)
+  const startVolOz = preVolumeOz * (1 + prepFrac);
+  const endVolOz   = preVolumeOz * (1 + prepFrac + serviceFrac);
+
+  // ---- ABV: start & end
+  const startABV = startVolOz > 0 ? (totalAlcoholMl / (startVolOz * OZ_TO_ML)) * 100 : 0;
+  const endABV   = endVolOz   > 0 ? (totalAlcoholMl / (endVolOz   * OZ_TO_ML)) * 100 : 0;
+
+  // ---- Calories (water doesn't change kcal)
   const kcalAlcohol = totalAlcoholMl * ETHANOL_DENSITY * 7 / 1000 * 1000;
-
-  // Use mixerKcal (includes mixer + liqueur kcal) to avoid double-counting sugar
-  const totalKcal = kcalAlcohol + mixerKcal;
+  const totalKcal   = kcalAlcohol + mixerKcal + rimKcal;
 
   // ---- Render ----
   const html = `
     <h2>Results</h2>
-    <p><strong>Total Volume:</strong> ${finalVolOz.toFixed(2)} oz</p>
-    <p><strong>ABV:</strong> ${abvPct.toFixed(1)}%</p>
+    <p><strong>Starting Volume (at serve):</strong> ${startVolOz.toFixed(2)} oz</p>
+    <p><strong>Starting ABV (at serve):</strong> ${startABV.toFixed(1)}%</p>
+
+    <p><strong>Ending Volume (end of drink):</strong> ${endVolOz.toFixed(2)} oz</p>
+    <p><strong>Ending ABV (end of drink):</strong> ${endABV.toFixed(1)}%</p>
+
+    <p><strong>Total Dilution Added:</strong> +${(endVolOz - preVolumeOz).toFixed(2)} oz</p>
+
     <p><strong>Calories:</strong> ${totalKcal.toFixed(0)} kcal</p>
     <p><strong>Sugar:</strong> ${totalSugarG.toFixed(1)} g</p>
     <p><strong>Carbs:</strong> ${totalCarbsG.toFixed(1)} g</p>
     <p><strong>Fat:</strong> ${totalFatG.toFixed(1)} g</p>
     <p><strong>Sodium:</strong> ${totalSodiumMg.toFixed(0)} mg</p>
     ${glassType ? `<p><strong>Glass:</strong> ${glassType.replace('_',' ')}</p>` : ""}
-    <p><em>Dilution added: +${dilutionOz.toFixed(2)} oz</em></p>
+    ${rimOption && rimOption !== 'none' ? `<p><strong>Rim:</strong> ${rimOption.replace('_',' ').replace('tajin','Tajín')}</p>` : ""}
   `;
   document.getElementById("results").innerHTML = html;
 });
