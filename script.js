@@ -152,10 +152,11 @@ document.getElementById("drink-form").addEventListener("submit", function (e) {
   let totalFatG = 0;
   let totalCarbsG = 0;
   let totalSodiumMg = 0;
-  let mixerKcal = 0;
+  let mixerKcal = 0; // includes mixer kcal and liqueur kcal
 
-  // ---- Alcohols (skip empty rows) ----
+  // ---- Alcohols (skip empty rows); add liqueur sugar/kcal if applicable ----
   document.querySelectorAll("#alcohol-list .ingredient-row").forEach(row => {
+    const name  = norm(row.querySelector(".alcohol-name")?.value);
     const abvVal = parseFloat(row.querySelector(".alcohol-abv")?.value);
     const volOz  = parseFloat(row.querySelector(".alcohol-volume")?.value);
     if (isNaN(abvVal) || isNaN(volOz) || volOz <= 0) return;
@@ -165,8 +166,66 @@ document.getElementById("drink-form").addEventListener("submit", function (e) {
 
     totalVolumeOz  += volOz;
     totalAlcoholMl += volMl * abv;
-    // Spirits assumed 0g sugar/fat/carbs/sodium for now
+
+    // If this alcohol is a liqueur, include its sugar/kcal per oz
+    const liq = (typeof LIQUEUR_DEFAULTS !== "undefined") ? LIQUEUR_DEFAULTS[name] : null;
+    if (liq) {
+      totalSugarG += (liq.sugar || 0) * volOz;
+      totalCarbsG += (liq.carbs || liq.sugar || 0) * volOz;
+      mixerKcal   += (liq.kcal  || 0) * volOz;
+    }
   });
+
+  // ---- Mixers (use defaults; no user sugar entry required) ----
+  document.querySelectorAll("#mixer-list .ingredient-row").forEach(row => {
+    const name  = norm(row.querySelector(".mixer-name")?.value);
+    const volOz = parseFloat(row.querySelector(".mixer-volume")?.value);
+    if (isNaN(volOz) || volOz <= 0) return;
+
+    const def = MIXER_DEFAULTS[name] || { kcal: 0, sugar: 0, carbs: 0, fat: 0, sodium: 0 };
+
+    totalVolumeOz += volOz;
+    totalSugarG   += def.sugar  * volOz;
+    totalCarbsG   += def.carbs  * volOz;
+    totalFatG     += def.fat    * volOz;
+    totalSodiumMg += def.sodium * volOz;
+    mixerKcal     += def.kcal   * volOz;
+  });
+
+  // ---- Dilution ----
+  const prepMethod   = document.getElementById("prep-method").value;   // 'shaken' | 'stirred' | 'built_over_ice' | 'built_neat'
+  const dilutionTime = document.getElementById("dilution-time").value; // 'shot' | 'sipped' | 'nursed'
+  const iceType      = document.getElementById("ice-type").value;      // 'none' | cube types
+  const glassType    = document.getElementById("glass-type")?.value || null;
+
+  const dilutionFactor = getDilutionFactor(prepMethod, dilutionTime, iceType);
+  const dilutionOz = totalVolumeOz * dilutionFactor;
+  const finalVolOz = totalVolumeOz + dilutionOz;
+
+  // ---- ABV & Calories ----
+  const abvPct = finalVolOz > 0 ? (totalAlcoholMl / (finalVolOz * OZ_TO_ML)) * 100 : 0;
+
+  // kcal from alcohol: ml -> grams (0.789 g/ml) * 7 kcal/g
+  const kcalAlcohol = totalAlcoholMl * ETHANOL_DENSITY * 7 / 1000 * 1000;
+
+  // Use mixerKcal (includes mixer + liqueur kcal) to avoid double-counting sugar
+  const totalKcal = kcalAlcohol + mixerKcal;
+
+  // ---- Render ----
+  const html = `
+    <h2>Results</h2>
+    <p><strong>Total Volume:</strong> ${finalVolOz.toFixed(2)} oz</p>
+    <p><strong>ABV:</strong> ${abvPct.toFixed(1)}%</p>
+    <p><strong>Calories:</strong> ${totalKcal.toFixed(0)} kcal</p>
+    <p><strong>Sugar:</strong> ${totalSugarG.toFixed(1)} g</p>
+    <p><strong>Carbs:</strong> ${totalCarbsG.toFixed(1)} g</p>
+    <p><strong>Fat:</strong> ${totalFatG.toFixed(1)} g</p>
+    <p><strong>Sodium:</strong> ${totalSodiumMg.toFixed(0)} mg</p>
+    ${glassType ? `<p><strong>Glass:</strong> ${glassType.replace('_',' ')}</p>` : ""}
+    <p><em>Dilution added: +${dilutionOz.toFixed(2)} oz</em></p>
+  `;
+  document.getElementById("results").innerHTML = html;
+});
 
   // ---- Mixers (use defaults; no user sugar entry required) ----
   document.querySelectorAll("#mixer-list .ingredient-row").forEach(row => {
